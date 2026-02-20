@@ -2,6 +2,9 @@ package org.example.principles;
 
 public class LiskovSubstitutionPrinciple {
     public static void main(String[] args) {
+        //Child must obey all such activities present in Parent or parents.
+        //In a way we can say,
+        // when we need to implement all such needed in Child and then Parent can be modified or reconstructed.
         Vehicle vehicle = new ElectricCar(false);
         vehicle.drive();
     }
@@ -21,7 +24,7 @@ public class LiskovSubstitutionPrinciple {
  *
  * <p>Usage:
  * <pre>
- *   Drivable car = new ElectricCar();
+ *   Vehicle car = new ElectricCar();
  *   if (car.canDrive()) {
  *       car.drive();
  *   }
@@ -94,6 +97,9 @@ class ElectricCar extends Vehicle {
     @Override
     public void drive() {
         if (!canDrive()) {
+            //even if it is throwing but parent's drive() is not violated,
+            //because parent has canDrive() method where parent knows that some mishaps can happen
+            //whether it is thrown or returns any negative acknowledge parent is not surprised.
             throw new IllegalStateException("Battery empty, cannot drive");
         }
         System.out.println("Driving electric car");
