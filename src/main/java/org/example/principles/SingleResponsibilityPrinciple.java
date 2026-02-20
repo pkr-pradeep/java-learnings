@@ -64,7 +64,63 @@ package org.example.principles;
  *   Splitting into Reader/Writer doesn't help here — the real issue is unrelated concerns,
  *   not read/write separation.
  *
+ *   @Question
+ *   <H3>What problem does Single Responsibility Principle prevent in real projects</H3>
+ *   <p>
+ *       SRP prevents:</br>
+ *          God classes </br>
+ *          Ripple effects of change - class is prone to changes</br>
+ *          Tight coupling between unrelated logic</br>
+ *          Hard-to-test units</br>
+ *   </p>
  *
+ * {@code SingleResponsibilityPrinciple Clarity (SRP)}
+ *
+ * Important clarification:
+ * - SRP is about having one reason to change, not about file layout.
+ * - Multiple classes in one Java file does NOT automatically violate SRP.
+ *
+ * Example (SRP respected):
+ * <pre>
+ * public class UserManager {
+ *     // Coordinates user-related operations
+ * }
+ *
+ * class UserRepository {
+ *     // Persistence responsibility
+ * }
+ *
+ * class PasswordHasher {
+ *     // Security responsibility
+ * }
+ *
+ * class EmailService {
+ *     // Communication responsibility
+ * }
+ *
+ * class ActivityLogger {
+ *     // Logging responsibility
+ * }
+ * </pre>
+ * Each class has a single responsibility. They just happen to live in the same file.
+ * SRP is intact because each class has only one reason to change.
+ *
+ * Example (SRP violated):
+ * <pre>
+ * public class UserManager {
+ *     public void saveUser(User user) { ... }        // persistence
+ *     public String hashPassword(String pwd) { ... } // security
+ *     public void sendResetEmail(String email) { ... } // communication
+ *     public void logActivity(User user) { ... }     // logging
+ * }
+ * </pre>
+ * Here, one class mixes multiple responsibilities. This is a direct SRP violation,
+ * regardless of whether other classes exist in the same file.
+ *
+ * {@code Key Insight:}
+ * - Multiple classes in one file is fine if each class has a single responsibility.
+ * - The violation occurs when a single class mixes persistence, security,
+ *   communication, logging, etc.
  */
 
 public class SingleResponsibilityPrinciple {
