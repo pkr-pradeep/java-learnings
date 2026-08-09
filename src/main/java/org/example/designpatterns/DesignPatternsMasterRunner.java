@@ -1,4 +1,4 @@
- package org.example.designpatterns;
+package org.example.designpatterns;
 
 import org.example.designpatterns.behavioral.*;
 import org.example.designpatterns.creational.*;
