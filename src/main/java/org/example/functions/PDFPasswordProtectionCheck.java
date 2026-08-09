@@ -1,20 +1,26 @@
 package org.example.functions;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
 
+/**
+ * Utility example checking file accessibility and archive/encryption headers safely.
+ */
 public class PDFPasswordProtectionCheck {
-    public static void main(String[] args) {
-        File file = new File("C:\\Users\\pkrpr\\Downloads\\Resume.pdf");
-        try (ZipFile zipEntry = new ZipFile(file)) {
 
-            System.out.println("no password");
+    public static void main(String[] args) {
+        String targetPath = System.getProperty("user.home") + File.separator + "Downloads" + File.separator + "Sample.pdf";
+        File file = new File(targetPath);
+
+        if (!file.exists()) {
+            System.out.println("File does not exist at path: " + targetPath + " (Skipping inspection)");
+            return;
+        }
+
+        try (ZipFile zipEntry = new ZipFile(file)) {
+            System.out.println("File opened successfully without zip password protection.");
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("Could not open as zip archive: " + ex.getMessage());
         }
     }
 }

@@ -1,10 +1,10 @@
 package org.example.pojomanipulation;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonMerge;
-
-import java.math.BigDecimal;
-import java.util.*;
 
 import static org.example.pojomanipulation.OrgExample.nvl;
 

@@ -1,8 +1,21 @@
 package org.example.designpatterns;
 
-import org.example.designpatterns.behavioral.*;
-import org.example.designpatterns.creational.*;
-import org.example.designpatterns.structural.*;
+import org.example.designpatterns.behavioral.ChainOfResponsibilityDemo;
+import org.example.designpatterns.behavioral.CommandPatternDemo;
+import org.example.designpatterns.behavioral.ObserverPatternDemo;
+import org.example.designpatterns.behavioral.StatePatternDemo;
+import org.example.designpatterns.behavioral.StrategyPatternDemo;
+import org.example.designpatterns.behavioral.TemplateMethodDemo;
+import org.example.designpatterns.creational.AbstractFactoryDemo;
+import org.example.designpatterns.creational.BuilderPatternDemo;
+import org.example.designpatterns.creational.FactoryMethodDemo;
+import org.example.designpatterns.creational.PrototypePatternDemo;
+import org.example.designpatterns.creational.SingletonPatternDemo;
+import org.example.designpatterns.structural.AdapterPatternDemo;
+import org.example.designpatterns.structural.CompositePatternDemo;
+import org.example.designpatterns.structural.DecoratorPatternDemo;
+import org.example.designpatterns.structural.FacadePatternDemo;
+import org.example.designpatterns.structural.ProxyPatternDemo;
 
 /**
  * <h1>MASTER DESIGN PATTERNS RUNNER & EDUCATIONAL INDEX</h1>

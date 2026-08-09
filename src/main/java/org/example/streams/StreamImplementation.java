@@ -1,27 +1,23 @@
 package org.example.streams;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.DoubleSummaryStatistics;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.example.domain.Employee;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 /**
- * Demonstrates several Java Stream operations on a sample list of employees.
- *
- * The class shows filtering, mapping, sorting, grouping, partitioning, and
- * statistical collection operations using the Java Streams API.
+ * Demonstrates Java Stream operations: filtering, mapping, sorting, grouping,
+ * partitioning, statistics, and null-safe comparator construction.
  */
 public class StreamImplementation {
-    /**
-     * Entry point for the Stream demonstration.
-     *
-     * Builds a sample employee list, applies salary updates, and prints
-     * outputs that illustrate common stream and collection operations.
-     */
+
     public static void main(String[] args) {
         List<Employee> employees = new ArrayList<>();
-        employees.add(new Employee(null, "E001", "Investment Advisor", 75000));
+        employees.add(new Employee("Alice", "E001", "Investment Advisor", 75000));
         employees.add(new Employee("Bob", "E002", "Developer", 55000));
         employees.add(new Employee("Pradeep", "E003", "Personal Banker", 39000));
         employees.add(new Employee("David", "E004", "QA Engineer", 39000));
@@ -32,80 +28,62 @@ public class StreamImplementation {
         employees.add(new Employee("Ivan", "E009", "Scrum Master", 62000));
         employees.add(new Employee("Soumyarani", "E010", "Risk Manager", 55000));
 
-        // Print high-salary employees before salary updates.
-        employees.stream().filter(x -> x.getSalary() > 60000)
+        // 1. High-salary filter before increments
+        System.out.println("--- Employees with Salary > 60k ---");
+        employees.stream()
+                .filter(x -> x.getSalary() > 60000)
                 .forEach(x -> System.out.print(x.getEmployeeName() + ", "));
+        System.out.println();
 
-        // Apply salary increments in-place based on the current salary band.
+        // 2. In-place salary increment calculation
         employees.forEach(e -> {
-            if (e.getSalary() > 60000)
+            if (e.getSalary() > 60000) {
                 e.salaryIncrement(2);
-            else if (e.getSalary() > 50000 && e.getSalary() < 60000) e.salaryIncrement(10);
+            } else if (e.getSalary() > 50000 && e.getSalary() < 60000) {
+                e.salaryIncrement(10);
+            }
         });
 
-        // Print congratulatory messages for employees who still earn above 60k.
-        employees.stream().filter(x -> x.getSalary() > 60000)
-                .forEach(x -> System.out.print("\nCongratulation " + x.getEmployeeName() +
-                        " with your salary " + x.getSalary() +
-                        ", You can avail pioneer credit card."));
-
-        //This line needs Comparable interface to be implemented by Employee.
-        /*Stream<Employee> sortedEmployees = employees.stream().sorted();
-        System.out.print("\n--------------\n");
-        sortedEmployees.forEach(x -> System.out.println(x.getEmployeeName()));
-        System.out.print("\n--------------\n");
-        //reverse sort on the fly using Comparator*/
+        // 3. Null-safe Sorting using Comparator.nullsLast
         employees.sort(Comparator.comparing(Employee::getSalary));
-        System.out.println(employees);
-        Stream<Employee> reversedSortedEmployees = employees.stream().sorted(Comparator.comparing(Employee::getEmployeeName).reversed());
+        System.out.println("\n--- Sorted Employees by Salary ---");
+        employees.forEach(e -> System.out.printf("%s (%s): $%.2f%n", e.getEmployeeName(), e.getEmployeeID(), e.getSalary()));
 
-        Employee employee = reversedSortedEmployees.filter(x -> x.getSalary() > 60000).findFirst().orElse(Employee.getInstance());
-        System.out.println(employee.getEmployeeID());
+        // Null-safe reverse sorting on Employee Name
+        List<Employee> reversedByName = employees.stream()
+                .sorted(Comparator.comparing(Employee::getEmployeeName, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+                .collect(Collectors.toList());
 
-        Map<Double, Long> employeeMapBasedOnSalary = employees.stream()
+        System.out.println("\nFirst high-earner after reverse name sort: " +
+                reversedByName.stream()
+                        .filter(x -> x.getSalary() > 60000)
+                        .findFirst()
+                        .map(Employee::getEmployeeID)
+                        .orElse("NONE"));
+
+        // 4. Grouping & Partitioning
+        Map<Double, Long> salaryFrequencyMap = employees.stream()
                 .collect(Collectors.groupingBy(Employee::getSalary, Collectors.counting()));
-        System.out.println(employeeMapBasedOnSalary);
+        System.out.println("\nSalary Frequency: " + salaryFrequencyMap);
 
-        Map<Boolean, Long> employeesGreaterThan60KSalary = employees.stream()
+        Map<Boolean, Long> partitionBySalary = employees.stream()
                 .collect(Collectors.partitioningBy(x -> x.getSalary() > 60000, Collectors.counting()));
-        System.out.println(employeesGreaterThan60KSalary);
+        System.out.println("Partitioned by Salary > 60k: " + partitionBySalary);
 
-        Comparator<Employee> salaryComparator = Comparator.comparing(Employee::getSalary);
+        // 5. Min, Max, Sum, and Summarizing Statistics
+        DoubleSummaryStatistics stats = employees.stream()
+                .collect(Collectors.summarizingDouble(Employee::getSalary));
+        System.out.printf("%nSalary Stats -> Count: %d, Min: $%.2f, Max: $%.2f, Avg: $%.2f, Sum: $%.2f%n",
+                stats.getCount(), stats.getMin(), stats.getMax(), stats.getAverage(), stats.getSum());
 
-        Employee minSal = employees.stream().min(salaryComparator).orElse(null);
-        System.out.println(minSal);
+        // 6. Partitioning vs Grouping Comparison
+        System.out.println("\n--- Partitioning vs Grouping ---");
+        Map<Boolean, Long> evenOddPartition = employees.stream()
+                .collect(Collectors.partitioningBy(e -> e.getSalary() % 2 == 0, Collectors.counting()));
+        System.out.println("Partition (Even Salary boolean): " + evenOddPartition);
 
-        System.out.println(employees.stream().mapToDouble(Employee::getSalary).sum());
-        System.out.println(employees.stream().mapToDouble(Employee::getSalary).reduce(10000, Double::sum));
-        System.out.println(employees.stream()
-                .collect(Collectors.summarizingDouble(Employee::getSalary)));
-
-        /**
-         * When to use which
-         * - Use partitioningBy when the classifier is boolean and you want a guaranteed two-way split.
-         * It’s clearer and communicates intent better.
-         * - Use groupingBy when the classifier can have more than two values
-         * (e.g., department, salary range, job title). It’s more general.
-         *
-         * partitioningBy
-         * - Special case of grouping optimized for boolean classifiers.
-         * - Always produces a Map<Boolean, ...> with two keys: true and false.
-         * - Even if one bucket is empty, the key is still present.
-         * - Best when you know you’re splitting into two categories (like odd/even, pass/fail, active/inactive).
-         * groupingBy
-         * - General-purpose grouping by any classifier (String, Enum, Integer, etc.).
-         * - Produces a Map<K, ...> where K is whatever your function returns.
-         * - Keys are created only for values that actually occur.
-         * - More flexible — can handle multiple groups, not just two
-         */
-        System.out.println(employees.stream().collect(
-                Collectors.partitioningBy(e -> e.getSalary() % 2 == 0, Collectors.mapping(Employee::getEmployeeName, Collectors.counting()))));
-        System.out.println(employees.stream().collect(
-                Collectors.groupingBy(e -> {
-                    if(e.getSalary() % 2 == 0) return "even";
-                    else return "odd";
-                }, Collectors.mapping(Employee::getEmployeeID, Collectors.counting()))));
-
-
+        Map<String, Long> evenOddGroup = employees.stream()
+                .collect(Collectors.groupingBy(e -> (e.getSalary() % 2 == 0) ? "EVEN" : "ODD", Collectors.counting()));
+        System.out.println("Grouping (Even/Odd String): " + evenOddGroup);
     }
-}
+}
