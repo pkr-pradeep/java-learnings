@@ -52,6 +52,11 @@ class Account {
     private final boolean exists;
     private double balance;
 
+    public boolean isActive() { return active; }
+    public boolean getActive() { return active; }
+    public double getBalance() { return balance; }
+    public void setBalance(double balance) { this.balance = balance; }
+
     public Account(boolean exists, boolean active, double balance) {
         this.exists = exists;
         this.active = active;

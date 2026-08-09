@@ -6,7 +6,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Demonstrates several Java Stream operations on a sample list of employees.
+ *
+ * The class shows filtering, mapping, sorting, grouping, partitioning, and
+ * statistical collection operations using the Java Streams API.
+ */
 public class StreamImplementation {
+    /**
+     * Entry point for the Stream demonstration.
+     *
+     * Builds a sample employee list, applies salary updates, and prints
+     * outputs that illustrate common stream and collection operations.
+     */
     public static void main(String[] args) {
         List<Employee> employees = new ArrayList<>();
         employees.add(new Employee(null, "E001", "Investment Advisor", 75000));
@@ -20,15 +32,18 @@ public class StreamImplementation {
         employees.add(new Employee("Ivan", "E009", "Scrum Master", 62000));
         employees.add(new Employee("Soumyarani", "E010", "Risk Manager", 55000));
 
+        // Print high-salary employees before salary updates.
         employees.stream().filter(x -> x.getSalary() > 60000)
                 .forEach(x -> System.out.print(x.getEmployeeName() + ", "));
 
+        // Apply salary increments in-place based on the current salary band.
         employees.forEach(e -> {
             if (e.getSalary() > 60000)
                 e.salaryIncrement(2);
             else if (e.getSalary() > 50000 && e.getSalary() < 60000) e.salaryIncrement(10);
         });
 
+        // Print congratulatory messages for employees who still earn above 60k.
         employees.stream().filter(x -> x.getSalary() > 60000)
                 .forEach(x -> System.out.print("\nCongratulation " + x.getEmployeeName() +
                         " with your salary " + x.getSalary() +

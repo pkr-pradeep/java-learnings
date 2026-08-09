@@ -7,34 +7,41 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
+/**
+ * Demonstrates the difference between Runnable and Callable when using an ExecutorService.
+ *
+ * Use Runnable for fire-and-forget tasks that do not return a result. Use Callable when the
+ * task needs to return a value or throw a checked exception.
+ */
 public class RunnableAndCallable {
 
     private static final Logger logger = LoggerFactory.getLogger(RunnableAndCallable.class);
 
     public static void main(String[] args) {
         try {
-            String getValueFromThread = getValueFromFuture();
-            logger.info(getValueFromThread);
+            String result = getValueFromFuture();
+            logger.info(result);
         } catch (Exception ex) {
             logger.error(ex.getMessage());
         }
     }
 
     public static String getValueFromFuture() {
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
         try {
-
             Runnable runnableTask = () -> {
                 try {
                     TimeUnit.MILLISECONDS.sleep(300);
+                    logger.info("Runnable task completed without a result.");
                 } catch (InterruptedException e) {
-                    logger.error(e.getMessage());
+                    Thread.currentThread().interrupt();
+                    logger.error("Runnable was interrupted", e);
                 }
             };
 
             Callable<String> callableTask = () -> {
                 TimeUnit.MILLISECONDS.sleep(300);
-                return "Task's execution";
+                return "Callable result returned";
             };
 
             List<Callable<String>> callableTasks = new ArrayList<>();
@@ -42,24 +49,23 @@ public class RunnableAndCallable {
             callableTasks.add(callableTask);
             callableTasks.add(callableTask);
 
-            //This is for Runnable Object
+            // Runnable is used when we only need to execute work and do not need a response.
             executorService.execute(runnableTask);
 
+            // Callable is used when tasks must return values that the main thread depends on.
             StringBuilder stringBuilder = new StringBuilder();
             for (Callable<String> callable : callableTasks) {
-                //This is for callable object
-                Future<String> future =
-                        executorService.submit(callable);
+                Future<String> future = executorService.submit(callable);
                 stringBuilder.append(future.get());
+                stringBuilder.append(" | ");
             }
             return stringBuilder.toString();
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            logger.error("Error executing tasks", ex);
+            throw new RuntimeException(ex);
         } finally {
             executorService.shutdown();
         }
-
-        return null;
     }
 
 }
