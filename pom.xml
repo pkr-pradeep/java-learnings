@@ -95,8 +95,13 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
+                    <!-- DecodeSecretMessage1 - Line No.15 -->
+                    <source>9</source>
+                    <target>9</target>
+                    <!--
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
+                    -->
                 </configuration>
             </plugin>
         </plugins>

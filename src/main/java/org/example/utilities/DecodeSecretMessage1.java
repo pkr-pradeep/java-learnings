@@ -12,6 +12,7 @@ public class DecodeSecretMessage1 {
         if (args.length < 1) return;
         String arg = args[0];
         String html = arg.startsWith("http")
+                //for readAllBytes() - Language level modified to java 9
                 ? new String(new URL(arg).openStream().readAllBytes(), StandardCharsets.UTF_8)
                 : new String(Files.readAllBytes(Paths.get(arg)), StandardCharsets.UTF_8);
         print(parse(html));
